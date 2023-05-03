@@ -273,6 +273,7 @@ class IPv4CustomerFacingNetAllocator(object):
     net = u"192.168.0.0/%s" % bit
     prefix = 24
 
+
     def getNet(self, router_index, host_index):
         # Generate the operator net
         prefix = int(IPv4Interface(IPv4CustomerFacingNetAllocator.net).ip)
@@ -508,8 +509,14 @@ class IPv6MgmtAllocator(object):
 class IPv4MgmtAllocator(object):
 
     bit = 12
-    net = u"172.0.0.0/%d" % bit
-    prefix = 30
+
+    net = u"177.0.0.0/%d" % bit
+    
+    # prefix = 30
+    #adding in prefix to have address for the mongoDB container (as /30 allow only 2 (the controller interface & the host interface)).
+    prefix = 24
+
+
 
     def getNet(self, controller_index, router_index):
         # Generate the customer net
@@ -517,6 +524,7 @@ class IPv4MgmtAllocator(object):
         customerNet = IPv4Network(prefix | controller_index << 11 | router_index << 2)
         # Append prefix to the net
         customerNet = customerNet.supernet(new_prefix=IPv4MgmtAllocator.prefix)
+
         # Return the net
         return customerNet
 
@@ -526,6 +534,7 @@ class IPv4MgmtAllocator(object):
         hostAddress = IPv4Network(prefix | controller_index << 11 | router_index << 2 | 1)
         # Remove /128 mask from the address and convert to string
         hostAddress = IPv4Interface(hostAddress).ip.__str__()
+
         # Return the address
         return hostAddress
 
@@ -535,6 +544,7 @@ class IPv4MgmtAllocator(object):
         routerAddress = IPv4Network(prefix | controller_index << 11 | router_index << 2 | 2)
         # Remove /128 mask from the address and convert to string
         routerAddress = IPv4Interface(routerAddress).ip.__str__()
+
         # Return the address
         return routerAddress
 
@@ -756,6 +766,7 @@ class IPv4PropertiesGenerator(object):
   # Generator for link properties
   def getCoreLinksProperties(self, links):
     output = []
+
 
     for link in links:
       if self.verbose == True:
